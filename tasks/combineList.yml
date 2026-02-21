@@ -1,0 +1,22 @@
+#ROLE
+- name: Convert group list to dict by name
+  set_fact:
+    liste1_group_dict: "{{ liste1_group_dict | default({}) | combine({ item.name: item }) }}"
+  loop: "{{ (vpn_client_listGroup | default([])) }}"
+
+- name: Convert host list to dict by name
+  set_fact:
+    liste2_group_dict: "{{ liste2_group_dict | default({}) | combine({ item.name: item }) }}"
+  loop: "{{ (vpn_client_listHost | default([])) }}"
+
+- name: Build list of all unique names
+  set_fact:
+    listeTmp: "{{ ((liste1_group_dict | default({})).keys() | list + (liste2_group_dict | default({})).keys() | list) | unique }}"
+
+- name: Merge group + host for each name
+  set_fact:
+    "{{ outputList }}" : "{{ vpn_client_list | default([]) + [ (liste1_group_dict[name] | default({})) | combine(liste2_group_dict[name] | default({})) ] }}"
+  loop: "{{ listeTmp }}"
+  loop_control:
+    loop_var: name
+

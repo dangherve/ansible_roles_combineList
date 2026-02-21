@@ -1,0 +1,4 @@
+- include_tasks: combineList.yml
+  args:
+    apply:
+      delegate_to: localhost
