@@ -8,10 +8,19 @@
       {{
         combineList2_result +
         (
-          vars[liste2]
-          | selectattr('name', 'equalto', item.name)
-          | map('combine', item)
-          | list
+          (
+            (vars[liste2] | default([]))
+            | selectattr('name', 'equalto', item.name)
+            | map('combine', item)
+            | list
+          )
+          if (
+            (vars[liste2] | default([]))
+            | selectattr('name', 'equalto', item.name)
+            | list
+            | length > 0
+          )
+          else [item]
         )
       }}
   loop: "{{ vars[liste1] }}"
